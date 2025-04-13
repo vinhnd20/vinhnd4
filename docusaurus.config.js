@@ -22,7 +22,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "vinhnd20", // Usually your GitHub org/user name.
-  projectName: "FedericoTartarini.github.io", // Usually your repo name.
+  projectName: "vinhnd4", // Usually your repo name.
   trailingSlash: false,
   deploymentBranch: "gh-pages",
 
@@ -56,14 +56,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/FedericoTartarini/FedericoTartarini.github.io/tree/master/",
+            "https://github.com/vinhnd20/vinhnd4",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/FedericoTartarini/FedericoTartarini.github.io/tree/master/",
+            "https://github.com/vinhnd20/vinhnd4",
         },
         theme: {
           customCss: "./src/css/custom.css",
