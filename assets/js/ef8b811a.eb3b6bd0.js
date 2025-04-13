@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkmy_personal_website=self.webpackChunkmy_personal_website||[]).push([[8947],{6600:e=>{e.exports=JSON.parse('{"authors":[{"name":"Vinh Duc Nguyen","title":"DevSecOps Engineer","url":"https://github.com/vinhnd20","imageURL":"../img/vinhnd.jpg","key":"vinh","page":null,"count":1}]}')}}]);
