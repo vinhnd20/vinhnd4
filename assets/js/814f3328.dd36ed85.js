@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_personal_website=self.webpackChunkmy_personal_website||[]).push([[7472],{5513:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Understanding Model Context Protocol (MCP)","permalink":"/vinhnd4/blog/mcp-know-how","unlisted":false,"date":"2025-04-14T00:00:00.000Z"}]}')}}]);

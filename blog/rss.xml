@@ -4,30 +4,165 @@
         <title>Vinh Duc Nguyen Blog</title>
         <link>https://vinhnd20.github.io/vinhnd4/blog</link>
         <description>Vinh Duc Nguyen Blog</description>
-        <lastBuildDate>Thu, 26 Aug 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 14 Apr 2025 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
         <item>
-            <title><![CDATA[Welcome]]></title>
-            <link>https://vinhnd20.github.io/vinhnd4/blog/welcome</link>
-            <guid>https://vinhnd20.github.io/vinhnd4/blog/welcome</guid>
-            <pubDate>Thu, 26 Aug 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[Docusaurus blogging features are powered by the blog plugin.]]></description>
-            <content:encoded><![CDATA[<p><a href="https://docusaurus.io/docs/blog" target="_blank" rel="noopener noreferrer">Docusaurus blogging features</a> are powered by the <a href="https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog" target="_blank" rel="noopener noreferrer">blog plugin</a>.</p>
-<p>Here are a few tips you might find useful.</p>
-<p>Simply add Markdown files (or folders) to the <code>blog</code> directory.</p>
-<p>Regular blog authors can be added to <code>authors.yml</code>.</p>
-<p>The blog post date can be extracted from filenames, such as:</p>
+            <title><![CDATA[Understanding Model Context Protocol (MCP)]]></title>
+            <link>https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how</link>
+            <guid>https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how</guid>
+            <pubDate>Mon, 14 Apr 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[Introduction]]></description>
+            <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="introduction">Introduction<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#introduction" class="hash-link" aria-label="Direct link to Introduction" title="Direct link to Introduction">​</a></h2>
+<p>As artificial intelligence (AI) continues to advance rapidly, a growing number of intelligent models such as Claude, GPT-4, and Gemini have emerged. However, connecting each of these AI models to external data sources and tools is often a complex and time-consuming process, requiring significant effort to establish and maintain individual integrations.</p>
+<p>To address this challenge, the <strong>Model Context Protocol (MCP)</strong> was introduced as a standardized solution, simplifying the integration of AI models with external tools and data, making the process more efficient and seamless.</p>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="table-of-contents">Table of Contents<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#table-of-contents" class="hash-link" aria-label="Direct link to Table of Contents" title="Direct link to Table of Contents">​</a></h2>
 <ul>
-<li><code>2019-05-30-welcome.md</code></li>
-<li><code>2019-05-30-welcome/index.md</code></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#understanding-model-context-protocol-mcp">Understanding Model Context Protocol (MCP)</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#introduction">Introduction</a></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#table-of-contents">Table of Contents</a></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#1-what-is-model-context-protocol">1. What is Model Context Protocol?</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#11-concept">1.1 Concept</a></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#12-why-do-we-need-mcp">1.2 Why Do We Need MCP?</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#illustrative-example">Illustrative Example</a></li>
 </ul>
-<p>A blog post folder can be convenient to co-locate blog post images:</p>
-<p><img decoding="async" loading="lazy" alt="Docusaurus Plushie" src="https://vinhnd20.github.io/vinhnd4/assets/images/docusaurus-plushie-banner-a60f7593abca1e3eef26a9afa244e4fb.jpeg" width="1500" height="500" class="img_ev3q"></p>
-<p>The blog supports tags as well!</p>
-<p><strong>And if you don't want a blog</strong>: just delete this directory, and use <code>blog: false</code> in your Docusaurus config.</p>]]></content:encoded>
+</li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#13-comparing-mcp-with-traditional-apis">1.3 Comparing MCP with Traditional APIs</a></li>
+</ul>
+</li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#2-mcp-architecture-overview">2. MCP Architecture Overview</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#21-general-architecture">2.1 General Architecture</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#key-components-of-mcp">Key Components of MCP</a></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#connections-to-external-systems">Connections to External Systems</a></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#communication-process-details">Communication Process Details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#3-real-world-applications">3. Real-World Applications</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#31-mcp-architecture-in-practical-applications">3.1 MCP Architecture in Practical Applications</a>
+<ul>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#analysis-of-components-in-the-diagram">Analysis of Components in the Diagram</a></li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#practical-example">Practical Example</a></li>
+</ul>
+</li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#32-current-limitations-of-mcp">3.2 Current Limitations of MCP</a></li>
+</ul>
+</li>
+<li><a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#references">References</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="1-what-is-model-context-protocol">1. What is Model Context Protocol?<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#1-what-is-model-context-protocol" class="hash-link" aria-label="Direct link to 1. What is Model Context Protocol?" title="Direct link to 1. What is Model Context Protocol?">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="11-concept">1.1 Concept<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#11-concept" class="hash-link" aria-label="Direct link to 1.1 Concept" title="Direct link to 1.1 Concept">​</a></h3>
+<p>First, let’s clarify what an LLM is. A <strong>Large Language Model (LLM)</strong> is an AI model trained on vast datasets of text to understand and generate natural language. It can answer questions, write content, translate languages, or function as a virtual assistant. Examples include GPT-4, Claude, and Gemini.</p>
+<p>The <strong>Model Context Protocol (MCP)</strong> acts as a standardized protocol—comparable to a USB-C for AI—that enables LLMs to connect seamlessly with external data and tools. MCP is built on three core components:</p>
+<ul>
+<li><strong>Model</strong>: Represents the core logic of an application, defining how data is structured and decisions are made. In AI, this could be a neural network for processing language or images.</li>
+<li><strong>Context</strong>: Provides the environment in which the model operates, determining its behavior under various conditions, such as user interactions or system states. For example, a chatbot might respond differently based on the context of a conversation. Without proper context, models may produce irrelevant or biased results.</li>
+<li><strong>Protocol</strong>: Establishes the communication rules between the model and context, ensuring that changes in context appropriately influence the model and vice versa.</li>
+</ul>
+<p><img decoding="async" loading="lazy" alt="MCP Concept" src="https://vinhnd20.github.io/vinhnd4/assets/images/concept-ee840e32d3272bd74c56ba4d0d72fd96.png" width="720" height="405" class="img_ev3q"><br>
+<em>Figure 1: Illustration of the MCP concept.</em></p>
+<hr>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="12-why-do-we-need-mcp">1.2 Why Do We Need MCP?<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#12-why-do-we-need-mcp" class="hash-link" aria-label="Direct link to 1.2 Why Do We Need MCP?" title="Direct link to 1.2 Why Do We Need MCP?">​</a></h3>
+<p>Before MCP, integrating AI models with external data sources was a complicated process lacking a unified standard. Large Language Models (LLMs) like GPT, Claude, and Gemini faced two key limitations:</p>
+<ul>
+<li><strong>Context Limitation</strong>: They can only process and reason based on the information available in their current context.</li>
+<li><strong>Inability to Act</strong>: While they can generate text, they are unable to interact with the external world.</li>
+</ul>
+<p>This challenge is highlighted by the "M×N problem": connecting <strong>M</strong> AI models to <strong>N</strong> external tools requires building <strong>M×N</strong> individual integrations, resulting in a massive workload. MCP simplifies this to <strong>M+N</strong>.</p>
+<p>For instance, a company using 4 AI models (Claude, GPT-4, Gemini, Deepseek) and aiming to integrate them with 5 external services (GitHub, Slack, Google Drive, Salesforce, and an internal database) would need 4×5=20 separate integrations without MCP. With MCP, they only need 4 MCP clients (one for each AI model) and 5 MCP servers (one for each service), totaling 4+5=9 components—a 55% reduction in complexity and development time.</p>
+<p><img decoding="async" loading="lazy" alt="M×N vs M+N" src="https://vinhnd20.github.io/vinhnd4/assets/images/compare-529ecbfeb7ef68fed13340b1dd007176.webp" width="3784" height="1999" class="img_ev3q"><br>
+<em>Figure 2: Comparison of integration complexity between traditional methods (M×N) and MCP (M+N).</em></p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="illustrative-example">Illustrative Example<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#illustrative-example" class="hash-link" aria-label="Direct link to Illustrative Example" title="Direct link to Illustrative Example">​</a></h4>
+<p><img decoding="async" loading="lazy" alt="MCP Example" src="https://vinhnd20.github.io/vinhnd4/assets/images/examplef-47ee9721ffd976db58bf04f1943bbf80.png" width="1488" height="837" class="img_ev3q"><br>
+<em>Figure 3: Example illustrating MCP’s application in answering a user’s weather query.</em></p>
+<p>In this example, an MCP application consists of distinct components:</p>
+<ul>
+<li><strong>Host/Client Application</strong>: Manages user actions and application logic.</li>
+<li><strong>Agent Task (Weather Agent Action)</strong>: Receives user requests and performs actions using available tools and resources.</li>
+<li><strong>Weather MCP Server</strong>: Manages weather tools, weather API resources, and prompts to assist users.</li>
+</ul>
+<p>Consider a user query: <em>"Do I need an umbrella today?"</em> The process is as follows:</p>
+<ol>
+<li>The user asks whether an umbrella is needed.</li>
+<li>The host determines if the query requires an agent and forwards the user’s location data to the agent loop.</li>
+<li>The Weather Agent Action (client) queries the Weather Server for weather data based on the provided location.</li>
+<li>The Weather Agent (Host/Client/Server) retrieves weather data from the API, describes the day’s weather, and determines if an umbrella is needed based on the initial question.</li>
+</ol>
+<p>Thanks to MCP, the AI processes information efficiently, delivering accurate and relevant answers to the user.</p>
+<hr>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="13-comparing-mcp-with-traditional-apis">1.3 Comparing MCP with Traditional APIs<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#13-comparing-mcp-with-traditional-apis" class="hash-link" aria-label="Direct link to 1.3 Comparing MCP with Traditional APIs" title="Direct link to 1.3 Comparing MCP with Traditional APIs">​</a></h3>
+<p>To understand MCP’s importance, let’s compare it with traditional REST APIs:</p>
+<table><thead><tr><th><strong>#</strong></th><th><strong>Feature</strong></th><th><strong>MCP</strong></th><th><strong>Traditional REST APIs</strong></th></tr></thead><tbody><tr><td>1</td><td><strong>Communication</strong></td><td>Bidirectional and real-time</td><td>Typically one-way request-response</td></tr><tr><td>2</td><td><strong>Tool Discovery</strong></td><td>Automatic and dynamic</td><td>Requires manual configuration</td></tr><tr><td>3</td><td><strong>Context Awareness</strong></td><td>Built-in</td><td>Limited or absent</td></tr><tr><td>4</td><td><strong>Scalability</strong></td><td>Plug-and-play</td><td>Requires linear integration effort</td></tr><tr><td>5</td><td><strong>Standardization</strong></td><td>Unified protocol for all models</td><td>Varies by service</td></tr><tr><td>6</td><td><strong>Purpose</strong></td><td>Designed specifically for AI models</td><td>General-purpose</td></tr></tbody></table>
+<p>This standardization marks a significant shift for anyone developing AI applications.</p>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="2-mcp-architecture-overview">2. MCP Architecture Overview<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#2-mcp-architecture-overview" class="hash-link" aria-label="Direct link to 2. MCP Architecture Overview" title="Direct link to 2. MCP Architecture Overview">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="21-general-architecture">2.1 General Architecture<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#21-general-architecture" class="hash-link" aria-label="Direct link to 2.1 General Architecture" title="Direct link to 2.1 General Architecture">​</a></h3>
+<p>The overall architecture of MCP is illustrated below:</p>
+<p><img decoding="async" loading="lazy" alt="MCP Architecture" src="https://vinhnd20.github.io/vinhnd4/assets/images/architecture-c2867dac7290964eb7e2a0d512932e93.webp" width="1086" height="1280" class="img_ev3q"><br>
+<em>Figure 4: General architecture of MCP, including MCP Hosts, Clients, Servers, and connections to external systems.</em></p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="key-components-of-mcp">Key Components of MCP<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#key-components-of-mcp" class="hash-link" aria-label="Direct link to Key Components of MCP" title="Direct link to Key Components of MCP">​</a></h4>
+<table><thead><tr><th><strong>#</strong></th><th><strong>Component</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td>1</td><td><strong>MCP Hosts</strong></td><td>Programs or tools (e.g., Claude Desktop, IDEs, or AI tools) that access and use data via MCP.</td></tr><tr><td>2</td><td><strong>MCP Client</strong></td><td>Facilitates communication with the MCP Server, sending requests and receiving responses. Each client maintains a 1:1 connection with servers.</td></tr><tr><td>3</td><td><strong>MCP Server</strong></td><td>Handles requests from clients, executing tasks as required. Can be a physical or virtual server.</td></tr></tbody></table>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="connections-to-external-systems">Connections to External Systems<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#connections-to-external-systems" class="hash-link" aria-label="Direct link to Connections to External Systems" title="Direct link to Connections to External Systems">​</a></h4>
+<table><thead><tr><th><strong>#</strong></th><th><strong>System</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td>1</td><td><strong>Local Filesystem</strong></td><td>Used for temporary storage or results from tasks.</td></tr><tr><td>2</td><td><strong>Database</strong></td><td>Stores long-term data, accessible for queries by servers or clients.</td></tr><tr><td>3</td><td><strong>Web APIs</strong></td><td>Enables access to external information or services.</td></tr><tr><td>4</td><td><strong>Internet</strong></td><td>Facilitates connections to online services, such as cloud platforms or external tools/data.</td></tr></tbody></table>
+<p>Understanding the communication between MCP Clients and Servers is essential for building an MCP system. The process is illustrated below:</p>
+<p><img decoding="async" loading="lazy" alt="MCP Communication" src="https://vinhnd20.github.io/vinhnd4/assets/images/connection-8b3bed9b912253b9072a9d73819cfa22.webp" width="1244" height="1114" class="img_ev3q"><br>
+<em>Figure 5: Diagram illustrating the communication process between MCP Client and MCP Server.</em></p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="communication-process-details">Communication Process Details<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#communication-process-details" class="hash-link" aria-label="Direct link to Communication Process Details" title="Direct link to Communication Process Details">​</a></h4>
+<ul>
+<li>The client sends an initial request to discover the server’s capabilities. For example: <em>"Please provide information about available weather-related tools and resources."</em></li>
+<li>The server responds with detailed information about its capabilities, such as:<!-- -->
+<ul>
+<li><strong>Tools</strong>: Available tools, e.g., weather APIs or data analysis tools.</li>
+<li><strong>Prompt Templates</strong>: Predefined prompts the client can use to interact with the server.</li>
+<li><strong>Resources</strong>: Available resources, e.g., weather data, analysis reports, or additional information.</li>
+</ul>
+</li>
+<li>Once the capability exchange is complete, the system is ready for further message exchanges. The client can send more specific requests, and the server provides detailed responses. For example, after receiving weather tool information, the client might request weather forecasts for a specific city.</li>
+</ul>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="3-real-world-applications">3. Real-World Applications<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#3-real-world-applications" class="hash-link" aria-label="Direct link to 3. Real-World Applications" title="Direct link to 3. Real-World Applications">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="31-mcp-architecture-in-practical-applications">3.1 MCP Architecture in Practical Applications<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#31-mcp-architecture-in-practical-applications" class="hash-link" aria-label="Direct link to 3.1 MCP Architecture in Practical Applications" title="Direct link to 3.1 MCP Architecture in Practical Applications">​</a></h3>
+<p><img decoding="async" loading="lazy" alt="Real-World MCP" src="https://vinhnd20.github.io/vinhnd4/assets/images/real-world-fd53dc5a21fcce2002ba8aa50d62d920.png" width="800" height="600" class="img_ev3q"><br>
+<em>Figure 6: Diagram illustrating MCP architecture in a real-world application.</em></p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="analysis-of-components-in-the-diagram">Analysis of Components in the Diagram<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#analysis-of-components-in-the-diagram" class="hash-link" aria-label="Direct link to Analysis of Components in the Diagram" title="Direct link to Analysis of Components in the Diagram">​</a></h4>
+<table><thead><tr><th><strong>#</strong></th><th><strong>Component</strong></th><th><strong>Description</strong></th><th><strong>Example</strong></th></tr></thead><tbody><tr><td>1</td><td><strong>MCP Client (Hosts)</strong></td><td>Programs or tools (e.g., chatbots, IDEs) that connect to MCP Servers to perform tasks.</td><td>A chatbot acting as an MCP Client, where users send requests and receive responses from an MCP Server to query data or automate tasks.</td></tr><tr><td>2</td><td><strong>MCP Server</strong></td><td>Processes requests from MCP Clients and provides tools for task execution. Each server may have unique tools.</td><td>- <strong>Server 1</strong>: Tools like <code>Fetch all users</code>, <code>Insert a new user</code>, connected to a database. \n- <strong>Server 2</strong>: Tools like <code>Create new repo</code>, <code>Fetch last few commits</code>, connected to APIs (e.g., GitHub). \n- <strong>Server 3</strong>: Tools like <code>Run script ./start.sh</code>, <code>Start server</code>, <code>Create Docker image</code>, interacting with remote services.</td></tr><tr><td>3</td><td><strong>Data Source</strong></td><td>MCP Servers access databases for data retrieval/update or use APIs/remote services for actions.</td><td>- Retrieve or add users from a database. \n- Create repositories, fetch commits, or run remote services via APIs or remote services.</td></tr></tbody></table>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="practical-example">Practical Example<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#practical-example" class="hash-link" aria-label="Direct link to Practical Example" title="Direct link to Practical Example">​</a></h4>
+<p>Cursor, originally a code editor, has leveraged MCP Clients to expand its functionality, transforming into an "everything app." By integrating with MCP Servers, Cursor enables users to perform various tasks without leaving their workspace:</p>
+<ul>
+<li><strong>Slack Client (via Slack MCP Server)</strong>: Users can send messages or receive notifications from Slack directly within Cursor.</li>
+<li><strong>Email Sender (via Resend MCP Server)</strong>: Cursor supports sending emails without opening a separate email app.</li>
+<li><strong>Image Generator (via Replicate MCP Server)</strong>: Users can generate images, such as website banners, while coding.</li>
+</ul>
+<hr>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="32-current-limitations-of-mcp">3.2 Current Limitations of MCP<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#32-current-limitations-of-mcp" class="hash-link" aria-label="Direct link to 3.2 Current Limitations of MCP" title="Direct link to 3.2 Current Limitations of MCP">​</a></h3>
+<p>MCP has the potential to connect AI with tools, but it faces several limitations that need to be addressed:</p>
+<table><thead><tr><th><strong>#</strong></th><th><strong>Limitation</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td>1</td><td><strong>Multi-User Support</strong></td><td>Primarily supports single AI agents, not ideal for multi-user systems, limiting large-scale deployment.</td></tr><tr><td>2</td><td><strong>Standardized Authentication</strong></td><td>Lacks a unified authentication mechanism, posing security risks in complex systems.</td></tr><tr><td>3</td><td><strong>Access Control</strong></td><td>Lacks flexible permission control, offering only full access or none, complicating multi-user management.</td></tr><tr><td>4</td><td><strong>Tool Discovery</strong></td><td>Manual process, not automated, time-consuming despite planned improvements by Anthropic.</td></tr><tr><td>5</td><td><strong>Complex Workflows</strong></td><td>Does not support seamless task chaining, requiring users to handle complexity manually.</td></tr><tr><td>6</td><td><strong>User Experience</strong></td><td>Inconsistent and unintuitive, lacking tool suggestions, making it less user-friendly for beginners.</td></tr><tr><td>7</td><td><strong>Error Handling</strong></td><td>Difficult to identify and fix errors due to incomplete information, especially across systems.</td></tr></tbody></table>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="references">References<a href="https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how#references" class="hash-link" aria-label="Direct link to References" title="Direct link to References">​</a></h2>
+<ul>
+<li><a href="https://github.com/modelcontextprotocol" target="_blank" rel="noopener noreferrer">Model Context Protocol Official GitHub Repository</a> - Official GitHub page for MCP, including source code, documentation, and SDK.</li>
+<li><a href="https://www.datacamp.com/tutorial/mcp-model-context-protocol" target="_blank" rel="noopener noreferrer">DataCamp: "MCP: Model Context Protocol Tutorial" (15/03/2025)</a> - Detailed tutorial on MCP and its implementation.</li>
+<li><a href="https://dev.to/ajeetraina/the-rise-of-model-context-protocol-in-docker-desktop-4fji" target="_blank" rel="noopener noreferrer">Dev.to: "The Rise of Model Context Protocol in Docker Desktop" by Ajeet Raina (20/03/2025)</a> - Article on MCP applications in Docker Desktop.</li>
+<li><a href="https://blog.dailydoseofds.com/p/visual-guide-to-model-context-protocol" target="_blank" rel="noopener noreferrer">DailyDoseofDS: "Visual Guide to Model Context Protocol" (10/03/2025)</a> - Visual guide to MCP.</li>
+<li><a href="https://www.linkedin.com/pulse/model-context-protocol-mcp-ai-software-development-piyush-ranjan-dxj0e/" target="_blank" rel="noopener noreferrer">LinkedIn: "Model Context Protocol (MCP) in AI Software Development" by Piyush Ranjan (18/03/2025)</a> - Analysis of MCP in AI software development.</li>
+<li><a href="https://www.digidop.com/blog/mcp-ai-revolution" target="_blank" rel="noopener noreferrer">Digidop: "MCP: The AI Revolution" (12/03/2025)</a> - Article on MCP’s impact in AI.</li>
+<li><a href="https://a16z.com/a-deep-dive-into-mcp-and-the-future-of-ai-tooling/" target="_blank" rel="noopener noreferrer">a16z: "A Deep Dive into MCP and the Future of AI Tooling" (23/03/2025)</a> - In-depth analysis of MCP and the future of AI tooling.</li>
+</ul>]]></content:encoded>
+            <category>AI</category>
             <category>DevSecOps</category>
+            <category>MCP</category>
         </item>
     </channel>
 </rss>
