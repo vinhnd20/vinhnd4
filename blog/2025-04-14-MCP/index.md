@@ -2,7 +2,7 @@
 slug: mcp-know-how
 title: Understanding Model Context Protocol (MCP)
 authors: [vinh]
-tags: [AI, DevSecOps, MCP]
+tags: [AI, MCP]
 ---
 
 # Understanding Model Context Protocol (MCP)
