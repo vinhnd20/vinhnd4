@@ -14,15 +14,14 @@ const config = {
   favicon: "img/logo.png",
 
   // Set the production url of your site here
-  url: "https://FedericoTartarini.github.io",
+  url: "https://vinhnd20.github.io",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/",
-
+  baseUrl: "/vinhnd4/",
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "vinhnd20", // Usually your GitHub org/user name.
-  projectName: "FedericoTartarini.github.io", // Usually your repo name.
+  projectName: "vinhnd4", // Usually your repo name.
   trailingSlash: false,
   deploymentBranch: "gh-pages",
 
@@ -56,14 +55,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/FedericoTartarini/FedericoTartarini.github.io/tree/master/",
+            "https://github.com/vinhnd20/vinhnd4",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/FedericoTartarini/FedericoTartarini.github.io/tree/master/",
+            "https://github.com/vinhnd20/vinhnd4",
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -76,7 +75,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: "img/website-card.png",
+      image: "img/logo.png",
       navbar: {
         title: "My Site",
         logo: {
