@@ -55,14 +55,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/vinhnd20/vinhnd4",
+            "https://github.com/vinhnd20/vinhnd4/tree/main/",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/vinhnd20/vinhnd4",
+            "https://github.com/vinhnd20/vinhnd4/tree/main/",
         },
         theme: {
           customCss: "./src/css/custom.css",
