@@ -131,14 +131,81 @@
 <li>Starting and stopping containers.</li>
 <li>Managing the overall container lifecycle.</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="34-the-reconciliation-loop">3.4 The Reconciliation Loop<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#34-the-reconciliation-loop" class="hash-link" aria-label="Direct link to 3.4 The Reconciliation Loop" title="Direct link to 3.4 The Reconciliation Loop">​</a></h3>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="33-the-reconciliation-loop">3.3 The Reconciliation Loop<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#33-the-reconciliation-loop" class="hash-link" aria-label="Direct link to 3.3 The Reconciliation Loop" title="Direct link to 3.3 The Reconciliation Loop">​</a></h3>
 <p>The <strong>Reconciliation Loop</strong> is the most fundamental concept of Kubernetes. Kubernetes is a <strong>declarative</strong> system. Instead of giving a series of commands (imperative), the user defines the <strong>desired state</strong> of the cluster, and Kubernetes constantly works to achieve and maintain that state.</p>
 <p><strong>Example</strong>: If you set <code>replicas: 3</code> in a Deployment, Kubernetes will ensure that there are exactly 3 running Pods at all times.</p>
 <h4 class="anchor anchorWithStickyNavbar_LWe7" id="the-deployment-flow">The Deployment Flow<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#the-deployment-flow" class="hash-link" aria-label="Direct link to The Deployment Flow" title="Direct link to The Deployment Flow">​</a></h4>
 <!-- -->
 <h4 class="anchor anchorWithStickyNavbar_LWe7" id="how-it-handles-failures">How it handles failures<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#how-it-handles-failures" class="hash-link" aria-label="Direct link to How it handles failures" title="Direct link to How it handles failures">​</a></h4>
 <p>If a Pod crashes or a node fails, the loop detects the <strong>discrepancy</strong> between the actual state and the desired state and takes action immediately.</p>
-]]></content>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="4-kubernetes-core-abstractions">4. Kubernetes Core Abstractions<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#4-kubernetes-core-abstractions" class="hash-link" aria-label="Direct link to 4. Kubernetes Core Abstractions" title="Direct link to 4. Kubernetes Core Abstractions">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="41-the-pod-the-smallest-deployable-unit">4.1 The Pod: The Smallest Deployable Unit<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#41-the-pod-the-smallest-deployable-unit" class="hash-link" aria-label="Direct link to 4.1 The Pod: The Smallest Deployable Unit" title="Direct link to 4.1 The Pod: The Smallest Deployable Unit">​</a></h3>
+<p>A Pod is the basic execution unit of a Kubernetes application—the smallest and simplest unit in the Kubernetes object model that you create or deploy.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="shared-resources">Shared Resources<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#shared-resources" class="hash-link" aria-label="Direct link to Shared Resources" title="Direct link to Shared Resources">​</a></h4>
+<p>A Pod encapsulates one or more applications (containers), storage resources, a unique network identity (IP address), and options that govern how the container(s) should run. Containers within a Pod share:</p>
+<ul>
+<li><strong>Network Namespace</strong>: All containers in a Pod share the same IP address and port space. They can communicate with each other using <code>localhost</code>.</li>
+<li><strong>IPC (Inter-Process Communication)</strong>: Containers can use standard IPC (like SystemV semaphores or POSIX shared memory) to communicate.</li>
+<li><strong>Volumes</strong>: Pods can specify shared storage volumes that all containers in the Pod can access.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="deep-dive-pod-sandbox-and-the-pause-container">Deep Dive: Pod Sandbox and the Pause Container<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#deep-dive-pod-sandbox-and-the-pause-container" class="hash-link" aria-label="Direct link to Deep Dive: Pod Sandbox and the Pause Container" title="Direct link to Deep Dive: Pod Sandbox and the Pause Container">​</a></h4>
+<p>When you look at a node running a Pod, you might notice an extra container running that you didn't define. This is the <strong>Pause Container</strong> (also known as the Infrastructure Container).</p>
+<p>The Pause Container serves several critical purposes:</p>
+<ol>
+<li><strong>Sandbox</strong>: It acts as the "anchor" for the Pod's namespaces (Network, IPC, etc.).</li>
+<li><strong>Lifecycle Management</strong>: When the Pause container starts, it creates the namespaces that the other containers in the Pod will join. If your application container restarts, it simply joins the existing namespaces held by the Pause container, ensuring the IP address remains the same.</li>
+<li><strong>Zombie Process Reaping</strong>: It acts as <code>PID 1</code> for the Pod, reaping zombie processes that might be orphaned by other containers.</li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="42-the-controller-model">4.2 The Controller Model<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#42-the-controller-model" class="hash-link" aria-label="Direct link to 4.2 The Controller Model" title="Direct link to 4.2 The Controller Model">​</a></h3>
+<p>Kubernetes doesn't just run Pods; it manages their lifecycle through <strong>Controllers</strong>. These controllers manage "Workload" resources that abstract the creation of Pods.</p>
+<table><thead><tr><th style="text-align:left">Resource</th><th style="text-align:left">Primary Use Case</th><th style="text-align:left">Key Features</th></tr></thead><tbody><tr><td style="text-align:left"><strong>Deployment</strong></td><td style="text-align:left">Stateless Applications</td><td style="text-align:left">Rolling updates, rollbacks, and horizontal scaling.</td></tr><tr><td style="text-align:left"><strong>ReplicaSet</strong></td><td style="text-align:left">Pod Maintenance</td><td style="text-align:left">Ensures a specific number of Pod replicas are running.</td></tr><tr><td style="text-align:left"><strong>StatefulSet</strong></td><td style="text-align:left">Stateful Applications</td><td style="text-align:left">Stable network identities (web-0, web-1) and stable storage.</td></tr><tr><td style="text-align:left"><strong>DaemonSet</strong></td><td style="text-align:left">Node-level Services</td><td style="text-align:left">Runs a Pod on every node (e.g., logging, monitoring).</td></tr></tbody></table>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="43-desired-state-vs-actual-state">4.3 Desired State vs. Actual State<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#43-desired-state-vs-actual-state" class="hash-link" aria-label="Direct link to 4.3 Desired State vs. Actual State" title="Direct link to 4.3 Desired State vs. Actual State">​</a></h3>
+<p>The "magic" of Kubernetes lies in the constant comparison between the <strong>Desired State</strong> (what you asked for in your YAML) and the <strong>Actual State</strong> (what is currently running in the cluster).</p>
+<ol>
+<li><strong>Observation</strong>: The Controller Manager watches the API Server to see the current state.</li>
+<li><strong>Diffing</strong>: It compares the actual state against the desired state stored in <code>etcd</code>.</li>
+<li><strong>Acting</strong>: If there is a "drift" (e.g., a Pod crashed), the controller takes action (e.g., starts a new Pod) to reconcile the state.</li>
+</ol>
+<p>This declarative approach makes systems resilient and self-healing.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="5-services-ingress-and-networking">5. Services, Ingress, and Networking<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#5-services-ingress-and-networking" class="hash-link" aria-label="Direct link to 5. Services, Ingress, and Networking" title="Direct link to 5. Services, Ingress, and Networking">​</a></h2>
+<p>Networking in Kubernetes is built on the principle that every Pod should have its own IP address and can communicate with every other Pod in the cluster without NAT.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="51-kubernetes-service">5.1 Kubernetes Service<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#51-kubernetes-service" class="hash-link" aria-label="Direct link to 5.1 Kubernetes Service" title="Direct link to 5.1 Kubernetes Service">​</a></h3>
+<p>Because Pods are ephemeral (they can die and be replaced with new IPs), we need a stable way to access them. This is where the <strong>Service</strong> comes in.</p>
+<ul>
+<li><strong>ClusterIP (Default)</strong>: Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable from within the cluster.</li>
+<li><strong>NodePort</strong>: Exposes the Service on each Node's IP at a static port. You can contact the Service from outside the cluster by requesting <code>&lt;NodeIP&gt;:&lt;NodePort&gt;</code>.</li>
+<li><strong>LoadBalancer</strong>: Exposes the Service externally using a cloud provider's load balancer.</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="52-ingress">5.2 Ingress<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#52-ingress" class="hash-link" aria-label="Direct link to 5.2 Ingress" title="Direct link to 5.2 Ingress">​</a></h3>
+<p>While a Service (LoadBalancer) works for one application, it becomes expensive to have a dedicated Load Balancer for every service. <strong>Ingress</strong> acts as an API gateway or reverse proxy (like Nginx) that manages external access to the services in a cluster, typically HTTP/HTTPS.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="traffic-flow-visualization">Traffic Flow Visualization<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#traffic-flow-visualization" class="hash-link" aria-label="Direct link to Traffic Flow Visualization" title="Direct link to Traffic Flow Visualization">​</a></h4>
+<p>The following diagram shows how an external request travels from the Internet to a running application instance.</p>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="6-configuration-and-storage">6. Configuration and Storage<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#6-configuration-and-storage" class="hash-link" aria-label="Direct link to 6. Configuration and Storage" title="Direct link to 6. Configuration and Storage">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="61-configmaps-and-secrets">6.1 ConfigMaps and Secrets<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#61-configmaps-and-secrets" class="hash-link" aria-label="Direct link to 6.1 ConfigMaps and Secrets" title="Direct link to 6.1 ConfigMaps and Secrets">​</a></h3>
+<p>To keep containers portable, you shouldn't hardcode configuration inside images.</p>
+<ul>
+<li><strong>ConfigMap</strong>: Stores non-sensitive configuration data (e.g., database URLs).</li>
+<li><strong>Secret</strong>: Stores sensitive data like passwords, tokens, or SSH keys (encoded in Base64).</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="62-persistent-storage-pv-and-pvc">6.2 Persistent Storage: PV and PVC<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#62-persistent-storage-pv-and-pvc" class="hash-link" aria-label="Direct link to 6.2 Persistent Storage: PV and PVC" title="Direct link to 6.2 Persistent Storage: PV and PVC">​</a></h3>
+<p>Since containers have ephemeral file systems, data is lost if a container restarts. Kubernetes separates storage <em>provisioning</em> from storage <em>usage</em>:</p>
+<ol>
+<li><strong>PersistentVolume (PV)</strong>: A piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.</li>
+<li><strong>PersistentVolumeClaim (PVC)</strong>: A request for storage by a user. It is similar to a Pod; a Pod consumes node resources and a PVC consumes PV resources.</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="7-conclusion">7. Conclusion<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#7-conclusion" class="hash-link" aria-label="Direct link to 7. Conclusion" title="Direct link to 7. Conclusion">​</a></h2>
+<p>Kubernetes is a powerful platform because it abstracts the underlying infrastructure and provides a consistent API for managing containers at scale. By understanding the core components—from the Control Plane to Pods and Controllers—you can build systems that are significantly more resilient and easier to scale.</p>
+<p>Whether you are deploying a simple web app or a complex microservices architecture, the principles of <strong>declarative state</strong> and <strong>reconciliation loops</strong> remain the heart of everything Kubernetes does.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="8-references">8. References<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#8-references" class="hash-link" aria-label="Direct link to 8. References" title="Direct link to 8. References">​</a></h2>
+<ul>
+<li><a href="https://kubernetes.io/docs/home/" target="_blank" rel="noopener noreferrer">Kubernetes Documentation</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/overview/components/" target="_blank" rel="noopener noreferrer">Kubernetes Components</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/" target="_blank" rel="noopener noreferrer">Understanding Kubernetes Objects</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/" target="_blank" rel="noopener noreferrer">Ingress Controllers</a></li>
+<li><a href="https://www.cncf.io/the-childrens-guide-to-kubernetes/" target="_blank" rel="noopener noreferrer">The Illustrated Children's Guide to Kubernetes</a> (Highly recommended for visual learners!)</li>
+</ul>]]></content>
         <author>
             <name>Vinh Duc Nguyen</name>
             <uri>https://github.com/vinhnd20</uri>
