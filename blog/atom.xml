@@ -2,11 +2,37 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://vinhnd20.github.io/vinhnd4/blog</id>
     <title>Vinh Duc Nguyen Blog</title>
-    <updated>2025-04-14T00:00:00.000Z</updated>
+    <updated>2026-03-10T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://vinhnd20.github.io/vinhnd4/blog"/>
     <subtitle>Vinh Duc Nguyen Blog</subtitle>
     <icon>https://vinhnd20.github.io/vinhnd4/img/logo.png</icon>
+    <entry>
+        <title type="html"><![CDATA[Kubenetes Architecture Explained From First Principles]]></title>
+        <id>https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture</id>
+        <link href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture"/>
+        <updated>2026-03-10T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[When the number of applications and services increases, deploying and managing them becomes more complex. The system must ensure availability, scalability, and fault tolerance.]]></summary>
+        <content type="html"><![CDATA[<h1>1. Introduction</h1>
+<p>When the number of applications and services increases, deploying and managing them becomes more complex. The system must ensure availability, scalability, and fault tolerance.</p>
+<p>In the past, applications were deployed on virtual machines (VMs). However, virtual machines are relatively heavy and consume significant system resources. Containers were introduced to solve this problem. A container is a lightweight way to package an application together with its dependencies.</p>
+<p>When the number of containers grows to hundreds or even thousands, manual management becomes extremely difficult. We need a system that can automatically:</p>
+<ul>
+<li>Deploy containers</li>
+<li>Scale containers</li>
+<li>Manage container lifecycle</li>
+<li>Provide load balancing</li>
+</ul>
+<p>This is why container orchestration systems were created.</p>
+<p>Kubernetes was developed by engineers at Google based on their experience running large-scale infrastructure. Before Kubernetes, Google used internal systems such as Borg and Omega to manage containers in their data centers. Kubernetes was designed based on the ideas and lessons learned from those systems.</p>
+<h1>2. Containers as the Foundation</h1>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="21-containers-vs-virtual-machines">2.1 Containers vs Virtual Machines<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#21-containers-vs-virtual-machines" class="hash-link" aria-label="Direct link to 2.1 Containers vs Virtual Machines" title="Direct link to 2.1 Containers vs Virtual Machines">​</a></h2>]]></content>
+        <author>
+            <name>Vinh Duc Nguyen</name>
+            <uri>https://github.com/vinhnd20</uri>
+        </author>
+        <category label="Kubernetes" term="Kubernetes"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Understanding Model Context Protocol (MCP)]]></title>
         <id>https://vinhnd20.github.io/vinhnd4/blog/mcp-know-how</id>
