@@ -79,5 +79,67 @@ Some popular container runtimes include:
 * CRI-O — a runtime designed specifically for Kubernetes
 * Docker Engine — previously used by Kubernetes before dockershim was removed
 
+## 3. Kubernetes Architecture
+
+![alt text](images/k8s-architecture.png)
+
+Kubernetes is designed as a distributed system. A Kubernetes cluster consists of two main components:
+
+* **Control Plane**: Responsible for managing and coordinating the cluster.
+* **Worker Nodes**: Where the containers actually run.
+
+The Control Plane makes global decisions about the cluster, while Worker Nodes execute the assigned workloads.
+
+### 3.1 Control Plane Components
+
+#### kube-apiserver
+
+The API Server is the communication hub for Kubernetes. All other components in the cluster interact with Kubernetes through the API Server.
+
+For example:
+* **kubectl** sends requests to the API Server.
+* **Controllers** read the cluster state from the API Server.
+* **kubelet** reports the node state back to the API Server.
+
+The API Server is also responsible for authentication, authorization, and request validation.
+
+#### etcd
+
+etcd is a distributed key-value database for Kubernetes. It stores the entire state of the cluster, including Pods, Deployments, ConfigMaps, Secrets, Nodes, and more.
+
+Because etcd stores critical state information, it should always be deployed as a High Availability (HA) cluster.
+
+#### scheduler
+
+The Scheduler is responsible for deciding which node will run a specific Pod.
+
+When a new Pod is created:
+1. The Pod information is written into etcd through the API Server.
+2. The Scheduler detects that the Pod has not been assigned to a node.
+3. The Scheduler selects the most appropriate node to run the Pod.
+
+The Scheduler makes these decisions based on several factors: CPU/Memory requirements, node labels, affinity/anti-affinity rules, and taints/tolerations.
+
+#### Controller Manager
+
+The Controller Manager runs various control loops. Each controller is responsible for ensuring that the actual state of the cluster matches the desired state.
+
+Example: The **ReplicaSet Controller** ensures that the correct number of Pods are running at all times.
+
+#### Cloud Controller Manager
+
+The Cloud Controller Manager is the component that integrates with cloud providers. It decouples cloud-specific logic from the Kubernetes core, allowing for an isolated running environment.
+
+The Cloud Controller Manager manages:
+* **Node Controller**: Syncing node information with the cloud infrastructure (e.g., if a VM is terminated, it removes the node from the cluster).
+* **Route Controller**: Managing the routing infrastructure within the cloud network (e.g., managing the route table between nodes in a VPC).
+* **Service Controller**: Managing cloud LoadBalancer services.
+* **Volume Controller**: Managing cloud-based storage volumes.
+
+
+
+
+
+
 
 
