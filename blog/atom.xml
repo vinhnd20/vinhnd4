@@ -8,7 +8,7 @@
     <subtitle>Vinh Duc Nguyen Blog</subtitle>
     <icon>https://vinhnd20.github.io/vinhnd4/img/logo.png</icon>
     <entry>
-        <title type="html"><![CDATA[Kubenetes Architecture Explained From First Principles]]></title>
+        <title type="html"><![CDATA[Kubernetes Architecture Explained From First Principles]]></title>
         <id>https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture</id>
         <link href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture"/>
         <updated>2026-03-10T00:00:00.000Z</updated>
@@ -34,36 +34,36 @@
 <p>A virtual machine needs to boot a full operating system, which increases resource usage. As a result, a single server can usually run only a limited number of VMs.</p>
 <p>Containers do not need to boot a full operating system. Instead, they start as normal processes on the host system. This allows a single server to run hundreds of containers efficiently.</p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="22-container-runtime">2.2 Container Runtime<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#22-container-runtime" class="hash-link" aria-label="Direct link to 2.2 Container Runtime" title="Direct link to 2.2 Container Runtime">​</a></h3>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="what-is-container-runtime-">What is Container Runtime ?<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#what-is-container-runtime-" class="hash-link" aria-label="Direct link to What is Container Runtime ?" title="Direct link to What is Container Runtime ?">​</a></h4>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="what-is-container-runtime">What is Container Runtime?<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#what-is-container-runtime" class="hash-link" aria-label="Direct link to What is Container Runtime?" title="Direct link to What is Container Runtime?">​</a></h4>
 <p>A container runtime is the component responsible for executing and managing containers on a system.</p>
 <p>Its responsibilities typically include:</p>
 <ul>
-<li>Pulling container images from a container registry</li>
-<li>Creating containers from images</li>
-<li>Managing the container lifecycle</li>
-<li>Providing the execution environment for containers</li>
+<li>Pulling container images from a container registry.</li>
+<li>Creating containers from images.</li>
+<li>Managing the container lifecycle.</li>
+<li>Providing the execution environment for containers.</li>
 </ul>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="oci-standard">OCI standard<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#oci-standard" class="hash-link" aria-label="Direct link to OCI standard" title="Direct link to OCI standard">​</a></h4>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="oci-standard">OCI Standard<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#oci-standard" class="hash-link" aria-label="Direct link to OCI Standard" title="Direct link to OCI Standard">​</a></h4>
 <p>To ensure container compatibility across different platforms, the community created the Open Container Initiative (OCI).</p>
 <p>OCI defines standards for:</p>
 <ul>
-<li>Container image format</li>
-<li>Runtime specifications</li>
+<li>Container image format.</li>
+<li>Runtime specifications.</li>
 </ul>
 <p>Thanks to these standards, a container image can run on many different container runtimes.</p>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="role-of-container-runtime">Role of container runtime<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#role-of-container-runtime" class="hash-link" aria-label="Direct link to Role of container runtime" title="Direct link to Role of container runtime">​</a></h4>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="role-of-container-runtime">Role of Container Runtime<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#role-of-container-runtime" class="hash-link" aria-label="Direct link to Role of Container Runtime" title="Direct link to Role of Container Runtime">​</a></h4>
 <p>Kubernetes does not run containers directly. Instead, it relies on a container runtime to:</p>
 <ul>
-<li>Create containers</li>
-<li>Start and stop containers</li>
-<li>Manage the container lifecycle</li>
+<li>Create containers.</li>
+<li>Start and stop containers.</li>
+<li>Manage the container lifecycle.</li>
 </ul>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="example-runtimes">Example runtimes<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#example-runtimes" class="hash-link" aria-label="Direct link to Example runtimes" title="Direct link to Example runtimes">​</a></h4>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="example-runtimes">Example Runtimes<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#example-runtimes" class="hash-link" aria-label="Direct link to Example Runtimes" title="Direct link to Example Runtimes">​</a></h4>
 <p>Some popular container runtimes include:</p>
 <ul>
-<li>containerd — the most widely used runtime in Kubernetes environments</li>
-<li>CRI-O — a runtime designed specifically for Kubernetes</li>
-<li>Docker Engine — previously used by Kubernetes before dockershim was removed</li>
+<li><strong>containerd</strong> — the most widely used runtime in Kubernetes environments.</li>
+<li><strong>CRI-O</strong> — a runtime designed specifically for Kubernetes.</li>
+<li><strong>Docker Engine</strong> — previously used by Kubernetes before dockershim was removed.</li>
 </ul>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="3-kubernetes-architecture">3. Kubernetes Architecture<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#3-kubernetes-architecture" class="hash-link" aria-label="Direct link to 3. Kubernetes Architecture" title="Direct link to 3. Kubernetes Architecture">​</a></h2>
 <p><img decoding="async" loading="lazy" alt="alt text" src="https://vinhnd20.github.io/vinhnd4/assets/images/k8s-architecture-1f2a1cca2dd6e37d0e3a604f0912558e.png" width="1402" height="882" class="img_ev3q"></p>
@@ -102,11 +102,43 @@
 <p>The Cloud Controller Manager is the component that integrates with cloud providers. It decouples cloud-specific logic from the Kubernetes core, allowing for an isolated running environment.</p>
 <p>The Cloud Controller Manager manages:</p>
 <ul>
-<li><strong>Node Controller</strong>: Syncing node information with the cloud infrastructure (e.g., if a VM is terminated, it removes the node from the cluster).</li>
-<li><strong>Route Controller</strong>: Managing the routing infrastructure within the cloud network (e.g., managing the route table between nodes in a VPC).</li>
+<li><strong>Node Controller</strong>: Syncing node information with the cloud infrastructure.</li>
+<li><strong>Route Controller</strong>: Managing the routing infrastructure within the cloud network.</li>
 <li><strong>Service Controller</strong>: Managing cloud LoadBalancer services.</li>
 <li><strong>Volume Controller</strong>: Managing cloud-based storage volumes.</li>
-</ul>]]></content>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="32-worker-node-components">3.2 Worker Node Components<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#32-worker-node-components" class="hash-link" aria-label="Direct link to 3.2 Worker Node Components" title="Direct link to 3.2 Worker Node Components">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="kubelet">kubelet<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#kubelet" class="hash-link" aria-label="Direct link to kubelet" title="Direct link to kubelet">​</a></h4>
+<p>The kubelet is an agent that runs on each node in the cluster. Its primary responsibilities include:</p>
+<ul>
+<li>Getting <strong>PodSpecs</strong> from the API Server.</li>
+<li>Creating containers via the <strong>Container Runtime</strong>.</li>
+<li>Monitoring the status of containers.</li>
+<li>Reporting the state of the node back to the <strong>Control Plane</strong>.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="kube-proxy">kube-proxy<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#kube-proxy" class="hash-link" aria-label="Direct link to kube-proxy" title="Direct link to kube-proxy">​</a></h4>
+<p><strong>kube-proxy</strong> is responsible for network routing within the cluster. It ensures that network rules are maintained on nodes.</p>
+<p>It establishes network rules (such as <strong>iptables</strong> or <strong>IPVS</strong>) to:</p>
+<ul>
+<li>Forward traffic to the correct Pod.</li>
+<li>Perform load balancing across multiple Pods of a Service.</li>
+</ul>
+<p><strong>kube-proxy</strong> is the essential component that enables <strong>Kubernetes Services</strong> to function.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="container-runtime">Container Runtime<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#container-runtime" class="hash-link" aria-label="Direct link to Container Runtime" title="Direct link to Container Runtime">​</a></h4>
+<p>The <strong>Container Runtime</strong> is the software responsible for executing containers. It handles the low-level operations such as:</p>
+<ul>
+<li>Pulling container images from a registry.</li>
+<li>Starting and stopping containers.</li>
+<li>Managing the overall container lifecycle.</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="34-the-reconciliation-loop">3.4 The Reconciliation Loop<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#34-the-reconciliation-loop" class="hash-link" aria-label="Direct link to 3.4 The Reconciliation Loop" title="Direct link to 3.4 The Reconciliation Loop">​</a></h3>
+<p>The <strong>Reconciliation Loop</strong> is the most fundamental concept of Kubernetes. Kubernetes is a <strong>declarative</strong> system. Instead of giving a series of commands (imperative), the user defines the <strong>desired state</strong> of the cluster, and Kubernetes constantly works to achieve and maintain that state.</p>
+<p><strong>Example</strong>: If you set <code>replicas: 3</code> in a Deployment, Kubernetes will ensure that there are exactly 3 running Pods at all times.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="the-deployment-flow">The Deployment Flow<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#the-deployment-flow" class="hash-link" aria-label="Direct link to The Deployment Flow" title="Direct link to The Deployment Flow">​</a></h4>
+<!-- -->
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="how-it-handles-failures">How it handles failures<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#how-it-handles-failures" class="hash-link" aria-label="Direct link to How it handles failures" title="Direct link to How it handles failures">​</a></h4>
+<p>If a Pod crashes or a node fails, the loop detects the <strong>discrepancy</strong> between the actual state and the desired state and takes action immediately.</p>
+]]></content>
         <author>
             <name>Vinh Duc Nguyen</name>
             <uri>https://github.com/vinhnd20</uri>
