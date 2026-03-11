@@ -1,9 +1,11 @@
 ---
 slug: kubernetes-architecture
-title: Kubenetes Architecture Explained From First Principles
+title: Kubernetes Architecture Explained From First Principles
 authors: [vinh]
 tags: [Kubernetes]
 ---
+
+# Kubernetes Architecture Explained From First Principles
 
 ## 1. Introduction
 
@@ -32,7 +34,6 @@ Virtual machines create a full copy of an operating system for each application.
 
 Containers, on the other hand, run as isolated processes that share the host operating system kernel. Isolation is achieved using Linux namespaces and cgroups. Because containers share the host kernel, they are much lighter and require fewer resources.
 
-
 #### Resource efficiency 
 
 A virtual machine needs to boot a full operating system, which increases resource usage. As a result, a single server can usually run only a limited number of VMs.
@@ -41,43 +42,40 @@ Containers do not need to boot a full operating system. Instead, they start as n
 
 ### 2.2 Container Runtime 
 
-#### What is Container Runtime ? 
+#### What is Container Runtime?
 
 A container runtime is the component responsible for executing and managing containers on a system.
 
 Its responsibilities typically include:
 
-* Pulling container images from a container registry
-* Creating containers from images
-* Managing the container lifecycle
-* Providing the execution environment for containers
+* Pulling container images from a container registry.
+* Creating containers from images.
+* Managing the container lifecycle.
+* Providing the execution environment for containers.
 
-#### OCI standard 
+#### OCI Standard 
 
 To ensure container compatibility across different platforms, the community created the Open Container Initiative (OCI).
 
 OCI defines standards for:
-
-* Container image format
-* Runtime specifications
+* Container image format.
+* Runtime specifications.
 
 Thanks to these standards, a container image can run on many different container runtimes.
 
-#### Role of container runtime 
+#### Role of Container Runtime 
 
 Kubernetes does not run containers directly. Instead, it relies on a container runtime to:
+* Create containers.
+* Start and stop containers.
+* Manage the container lifecycle.
 
-* Create containers
-* Start and stop containers
-* Manage the container lifecycle
-
-#### Example runtimes 
+#### Example Runtimes 
 
 Some popular container runtimes include:
-
-* containerd — the most widely used runtime in Kubernetes environments
-* CRI-O — a runtime designed specifically for Kubernetes
-* Docker Engine — previously used by Kubernetes before dockershim was removed
+* **containerd** — the most widely used runtime in Kubernetes environments.
+* **CRI-O** — a runtime designed specifically for Kubernetes.
+* **Docker Engine** — previously used by Kubernetes before dockershim was removed.
 
 ## 3. Kubernetes Architecture
 
@@ -131,15 +129,70 @@ Example: The **ReplicaSet Controller** ensures that the correct number of Pods a
 The Cloud Controller Manager is the component that integrates with cloud providers. It decouples cloud-specific logic from the Kubernetes core, allowing for an isolated running environment.
 
 The Cloud Controller Manager manages:
-* **Node Controller**: Syncing node information with the cloud infrastructure (e.g., if a VM is terminated, it removes the node from the cluster).
-* **Route Controller**: Managing the routing infrastructure within the cloud network (e.g., managing the route table between nodes in a VPC).
+* **Node Controller**: Syncing node information with the cloud infrastructure.
+* **Route Controller**: Managing the routing infrastructure within the cloud network.
 * **Service Controller**: Managing cloud LoadBalancer services.
 * **Volume Controller**: Managing cloud-based storage volumes.
 
+### 3.2 Worker Node Components
 
+#### kubelet
 
+The kubelet is an agent that runs on each node in the cluster. Its primary responsibilities include:
 
+* Getting **PodSpecs** from the API Server.
+* Creating containers via the **Container Runtime**.
+* Monitoring the status of containers.
+* Reporting the state of the node back to the **Control Plane**.
 
+#### kube-proxy
 
+**kube-proxy** is responsible for network routing within the cluster. It ensures that network rules are maintained on nodes.
 
+It establishes network rules (such as **iptables** or **IPVS**) to:
+* Forward traffic to the correct Pod.
+* Perform load balancing across multiple Pods of a Service.
 
+**kube-proxy** is the essential component that enables **Kubernetes Services** to function.
+
+#### Container Runtime
+
+The **Container Runtime** is the software responsible for executing containers. It handles the low-level operations such as:
+* Pulling container images from a registry.
+* Starting and stopping containers.
+* Managing the overall container lifecycle.
+
+### 3.4 The Reconciliation Loop
+
+The **Reconciliation Loop** is the most fundamental concept of Kubernetes. Kubernetes is a **declarative** system. Instead of giving a series of commands (imperative), the user defines the **desired state** of the cluster, and Kubernetes constantly works to achieve and maintain that state.
+
+**Example**: If you set `replicas: 3` in a Deployment, Kubernetes will ensure that there are exactly 3 running Pods at all times.
+
+#### The Deployment Flow
+
+```mermaid
+graph TD
+    A[User defines desired state] -->|Apply YAML| B[API Server]
+    B -->|Store state| C[(etcd)]
+    D[Controllers] -->|Monitor state| B
+    D -->|Request new Pods| B
+    E[Scheduler] -->|Assign Pods to Nodes| B
+    F[Kubelet] -->|Create Containers| G[Worker Nodes]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#00d,color:#fff
+    style G fill:#dfd,stroke:#333
+```
+
+#### How it handles failures
+
+If a Pod crashes or a node fails, the loop detects the **discrepancy** between the actual state and the desired state and takes action immediately.
+
+```mermaid
+graph LR
+    A[Actual State: 2 Pods] --> B{Match?}
+    C[Desired State: 3 Pods] --> B
+    B -->|No| D[Controller triggers action]
+    D --> E[Create 1 new Pod]
+    E --> F[Actual State: 3 Pods]
+```

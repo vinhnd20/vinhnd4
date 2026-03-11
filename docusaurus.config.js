@@ -157,6 +157,7 @@ const config = {
     }),
   stylesheets: ["https://fonts.googleapis.com/icon?family=Material+Icons"],
   themes: [
+    "@docusaurus/theme-mermaid",
     // ... Your other themes.
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
@@ -172,6 +173,9 @@ const config = {
       }),
     ],
   ],
+  markdown: {
+    mermaid: true,
+  },
 };
 
 export default config;
