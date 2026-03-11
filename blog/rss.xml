@@ -65,6 +65,48 @@
 <li>containerd — the most widely used runtime in Kubernetes environments</li>
 <li>CRI-O — a runtime designed specifically for Kubernetes</li>
 <li>Docker Engine — previously used by Kubernetes before dockershim was removed</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="3-kubernetes-architecture">3. Kubernetes Architecture<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#3-kubernetes-architecture" class="hash-link" aria-label="Direct link to 3. Kubernetes Architecture" title="Direct link to 3. Kubernetes Architecture">​</a></h2>
+<p><img decoding="async" loading="lazy" alt="alt text" src="https://vinhnd20.github.io/vinhnd4/assets/images/k8s-architecture-1f2a1cca2dd6e37d0e3a604f0912558e.png" width="1402" height="882" class="img_ev3q"></p>
+<p>Kubernetes is designed as a distributed system. A Kubernetes cluster consists of two main components:</p>
+<ul>
+<li><strong>Control Plane</strong>: Responsible for managing and coordinating the cluster.</li>
+<li><strong>Worker Nodes</strong>: Where the containers actually run.</li>
+</ul>
+<p>The Control Plane makes global decisions about the cluster, while Worker Nodes execute the assigned workloads.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="31-control-plane-components">3.1 Control Plane Components<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#31-control-plane-components" class="hash-link" aria-label="Direct link to 3.1 Control Plane Components" title="Direct link to 3.1 Control Plane Components">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="kube-apiserver">kube-apiserver<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#kube-apiserver" class="hash-link" aria-label="Direct link to kube-apiserver" title="Direct link to kube-apiserver">​</a></h4>
+<p>The API Server is the communication hub for Kubernetes. All other components in the cluster interact with Kubernetes through the API Server.</p>
+<p>For example:</p>
+<ul>
+<li><strong>kubectl</strong> sends requests to the API Server.</li>
+<li><strong>Controllers</strong> read the cluster state from the API Server.</li>
+<li><strong>kubelet</strong> reports the node state back to the API Server.</li>
+</ul>
+<p>The API Server is also responsible for authentication, authorization, and request validation.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="etcd">etcd<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#etcd" class="hash-link" aria-label="Direct link to etcd" title="Direct link to etcd">​</a></h4>
+<p>etcd is a distributed key-value database for Kubernetes. It stores the entire state of the cluster, including Pods, Deployments, ConfigMaps, Secrets, Nodes, and more.</p>
+<p>Because etcd stores critical state information, it should always be deployed as a High Availability (HA) cluster.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="scheduler">scheduler<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#scheduler" class="hash-link" aria-label="Direct link to scheduler" title="Direct link to scheduler">​</a></h4>
+<p>The Scheduler is responsible for deciding which node will run a specific Pod.</p>
+<p>When a new Pod is created:</p>
+<ol>
+<li>The Pod information is written into etcd through the API Server.</li>
+<li>The Scheduler detects that the Pod has not been assigned to a node.</li>
+<li>The Scheduler selects the most appropriate node to run the Pod.</li>
+</ol>
+<p>The Scheduler makes these decisions based on several factors: CPU/Memory requirements, node labels, affinity/anti-affinity rules, and taints/tolerations.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="controller-manager">Controller Manager<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#controller-manager" class="hash-link" aria-label="Direct link to Controller Manager" title="Direct link to Controller Manager">​</a></h4>
+<p>The Controller Manager runs various control loops. Each controller is responsible for ensuring that the actual state of the cluster matches the desired state.</p>
+<p>Example: The <strong>ReplicaSet Controller</strong> ensures that the correct number of Pods are running at all times.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="cloud-controller-manager">Cloud Controller Manager<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#cloud-controller-manager" class="hash-link" aria-label="Direct link to Cloud Controller Manager" title="Direct link to Cloud Controller Manager">​</a></h4>
+<p>The Cloud Controller Manager is the component that integrates with cloud providers. It decouples cloud-specific logic from the Kubernetes core, allowing for an isolated running environment.</p>
+<p>The Cloud Controller Manager manages:</p>
+<ul>
+<li><strong>Node Controller</strong>: Syncing node information with the cloud infrastructure (e.g., if a VM is terminated, it removes the node from the cluster).</li>
+<li><strong>Route Controller</strong>: Managing the routing infrastructure within the cloud network (e.g., managing the route table between nodes in a VPC).</li>
+<li><strong>Service Controller</strong>: Managing cloud LoadBalancer services.</li>
+<li><strong>Volume Controller</strong>: Managing cloud-based storage volumes.</li>
 </ul>]]></content:encoded>
             <category>Kubernetes</category>
         </item>
