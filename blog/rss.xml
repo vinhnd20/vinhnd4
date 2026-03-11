@@ -13,8 +13,8 @@
             <link>https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture</link>
             <guid>https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture</guid>
             <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[When the number of applications and services increases, deploying and managing them becomes more complex. The system must ensure availability, scalability, and fault tolerance.]]></description>
-            <content:encoded><![CDATA[<h1>1. Introduction</h1>
+            <description><![CDATA[1. Introduction]]></description>
+            <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="1-introduction">1. Introduction<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#1-introduction" class="hash-link" aria-label="Direct link to 1. Introduction" title="Direct link to 1. Introduction">​</a></h2>
 <p>When the number of applications and services increases, deploying and managing them becomes more complex. The system must ensure availability, scalability, and fault tolerance.</p>
 <p>In the past, applications were deployed on virtual machines (VMs). However, virtual machines are relatively heavy and consume significant system resources. Containers were introduced to solve this problem. A container is a lightweight way to package an application together with its dependencies.</p>
 <p>When the number of containers grows to hundreds or even thousands, manual management becomes extremely difficult. We need a system that can automatically:</p>
@@ -26,8 +26,46 @@
 </ul>
 <p>This is why container orchestration systems were created.</p>
 <p>Kubernetes was developed by engineers at Google based on their experience running large-scale infrastructure. Before Kubernetes, Google used internal systems such as Borg and Omega to manage containers in their data centers. Kubernetes was designed based on the ideas and lessons learned from those systems.</p>
-<h1>2. Containers as the Foundation</h1>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="21-containers-vs-virtual-machines">2.1 Containers vs Virtual Machines<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#21-containers-vs-virtual-machines" class="hash-link" aria-label="Direct link to 2.1 Containers vs Virtual Machines" title="Direct link to 2.1 Containers vs Virtual Machines">​</a></h2>]]></content:encoded>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="2-containers-as-the-foundation">2. Containers as the Foundation<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#2-containers-as-the-foundation" class="hash-link" aria-label="Direct link to 2. Containers as the Foundation" title="Direct link to 2. Containers as the Foundation">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="21-containers-vs-virtual-machines">2.1 Containers vs Virtual Machines<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#21-containers-vs-virtual-machines" class="hash-link" aria-label="Direct link to 2.1 Containers vs Virtual Machines" title="Direct link to 2.1 Containers vs Virtual Machines">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="isolation-model">Isolation Model<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#isolation-model" class="hash-link" aria-label="Direct link to Isolation Model" title="Direct link to Isolation Model">​</a></h4>
+<p>Virtual machines create a full copy of an operating system for each application. Each VM includes the operating system, application binaries, and required libraries. This model provides strong isolation, but it is heavy and consumes more system resources.</p>
+<p>Containers, on the other hand, run as isolated processes that share the host operating system kernel. Isolation is achieved using Linux namespaces and cgroups. Because containers share the host kernel, they are much lighter and require fewer resources.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="resource-efficiency">Resource efficiency<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#resource-efficiency" class="hash-link" aria-label="Direct link to Resource efficiency" title="Direct link to Resource efficiency">​</a></h4>
+<p>A virtual machine needs to boot a full operating system, which increases resource usage. As a result, a single server can usually run only a limited number of VMs.</p>
+<p>Containers do not need to boot a full operating system. Instead, they start as normal processes on the host system. This allows a single server to run hundreds of containers efficiently.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="22-container-runtime">2.2 Container Runtime<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#22-container-runtime" class="hash-link" aria-label="Direct link to 2.2 Container Runtime" title="Direct link to 2.2 Container Runtime">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="what-is-container-runtime-">What is Container Runtime ?<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#what-is-container-runtime-" class="hash-link" aria-label="Direct link to What is Container Runtime ?" title="Direct link to What is Container Runtime ?">​</a></h4>
+<p>A container runtime is the component responsible for executing and managing containers on a system.</p>
+<p>Its responsibilities typically include:</p>
+<ul>
+<li>Pulling container images from a container registry</li>
+<li>Creating containers from images</li>
+<li>Managing the container lifecycle</li>
+<li>Providing the execution environment for containers</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="oci-standard">OCI standard<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#oci-standard" class="hash-link" aria-label="Direct link to OCI standard" title="Direct link to OCI standard">​</a></h4>
+<p>To ensure container compatibility across different platforms, the community created the Open Container Initiative (OCI).</p>
+<p>OCI defines standards for:</p>
+<ul>
+<li>Container image format</li>
+<li>Runtime specifications</li>
+</ul>
+<p>Thanks to these standards, a container image can run on many different container runtimes.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="role-of-container-runtime">Role of container runtime<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#role-of-container-runtime" class="hash-link" aria-label="Direct link to Role of container runtime" title="Direct link to Role of container runtime">​</a></h4>
+<p>Kubernetes does not run containers directly. Instead, it relies on a container runtime to:</p>
+<ul>
+<li>Create containers</li>
+<li>Start and stop containers</li>
+<li>Manage the container lifecycle</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="example-runtimes">Example runtimes<a href="https://vinhnd20.github.io/vinhnd4/blog/kubernetes-architecture#example-runtimes" class="hash-link" aria-label="Direct link to Example runtimes" title="Direct link to Example runtimes">​</a></h4>
+<p>Some popular container runtimes include:</p>
+<ul>
+<li>containerd — the most widely used runtime in Kubernetes environments</li>
+<li>CRI-O — a runtime designed specifically for Kubernetes</li>
+<li>Docker Engine — previously used by Kubernetes before dockershim was removed</li>
+</ul>]]></content:encoded>
             <category>Kubernetes</category>
         </item>
         <item>
