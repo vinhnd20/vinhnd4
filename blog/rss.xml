@@ -205,7 +205,6 @@
 <li><a href="https://kubernetes.io/docs/concepts/overview/components/" target="_blank" rel="noopener noreferrer">Kubernetes Components</a></li>
 <li><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/" target="_blank" rel="noopener noreferrer">Understanding Kubernetes Objects</a></li>
 <li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/" target="_blank" rel="noopener noreferrer">Ingress Controllers</a></li>
-<li><a href="https://www.cncf.io/the-childrens-guide-to-kubernetes/" target="_blank" rel="noopener noreferrer">The Illustrated Children's Guide to Kubernetes</a> (Highly recommended for visual learners!)</li>
 </ul>]]></content:encoded>
             <category>Kubernetes</category>
         </item>
