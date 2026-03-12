@@ -315,5 +315,4 @@ Whether you are deploying a simple web app or a complex microservices architectu
 - [Kubernetes Components](https://kubernetes.io/docs/concepts/overview/components/)
 - [Understanding Kubernetes Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
 - [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)
-- [The Illustrated Children's Guide to Kubernetes](https://www.cncf.io/the-childrens-guide-to-kubernetes/) (Highly recommended for visual learners!)
 
