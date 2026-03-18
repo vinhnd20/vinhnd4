@@ -503,7 +503,7 @@ Pod eth0 → veth pair → bridge → routing table → iptables → conntrack �
 
 ---
 
-## 6.1 The Virtual Cable: veth pair
+### 6.1 The Virtual Cable: veth pair
 
 When CNI sets up a Pod's network, it creates a **veth pair** — a virtual cable with two ends. One end lives inside the Pod's network namespace; the other lives on the host.
 
@@ -558,7 +558,7 @@ graph LR
 
 ---
 
-## 6.2 Routing: How a packet knows where to go
+### 6.2 Routing: How a packet knows where to go
 
 **Inside the Pod:**
 
@@ -598,7 +598,7 @@ graph LR
 
 ---
 
-## 6.3 Inbound: The iptables DNAT trick (Service → Pod)
+### 6.3 Inbound: The iptables DNAT trick (Service → Pod)
 
 A Kubernetes Service IP (ClusterIP) does not exist as a real interface anywhere. It is a **virtual IP maintained purely by iptables rules** written by `kube-proxy`.
 
@@ -645,7 +645,7 @@ Read this as two sides of the same connection: the kernel remembers both the for
 
 ---
 
-## 6.4 Outbound: SNAT / Masquerade (Pod → Internet)
+### 6.4 Outbound: SNAT / Masquerade (Pod → Internet)
 
 Pod IPs (`10.244.x.x`) are private and not routable on the internet. When a Pod calls out, the kernel must **replace the source IP** with the Node's IP.
 
@@ -688,7 +688,7 @@ graph LR
 
 ---
 
-## 6.5 DNS: CoreDNS and the ndots:5 trap
+### 6.5 DNS: CoreDNS and the ndots:5 trap
 
 Every Pod has its DNS pre-configured by Kubelet at startup:
 
@@ -735,7 +735,7 @@ This causes **3 wasted DNS round-trips** before every external lookup. Fix: use 
 
 ---
 
-## 6.6 Full picture: End-to-end packet flow
+### 6.6 Full picture: End-to-end packet flow
 
 ```mermaid
 graph LR
@@ -774,3 +774,16 @@ graph LR
 Kubernetes networking is not a separate networking stack. It is a set of Linux networking rules created dynamically through CNI and kube-proxy. Packets move through veth interfaces, bridges, routing tables, NAT rules, and conntrack state tables before reaching containers.
 
 Understanding this mapping explains most Kubernetes networking issues.
+
+---
+
+## 7. References & Further Reading
+
+For those who want to dive even deeper into the primitives discussed in this post:
+
+- **Kubernetes Documentation:** [Pod Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) and [Service Networking](https://kubernetes.io/docs/concepts/services-networking/service/)
+- **CNI Specification:** [GitHub - containernetworking/cni](https://github.com/containernetworking/cni/blob/master/SPEC.md)
+- **Linux Manuals:** `man namespaces(7)`, `man cgroups(7)`, `man iptables(8)`
+- **CoreDNS:** [Official Website](https://coredns.io/)
+- **Project Calico:** [The IPtables Data Plane](https://www.projectcalico.org/iptables-data-plane/)
+- **Julia Evans' Zines:** Excellent visual guides on [Networking](https://jvns.ca/networking-zine.pdf) and [Containers](https://jvns.ca/blog/2016/10/10/what-even-is-a-container/).
