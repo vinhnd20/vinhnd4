@@ -137,12 +137,22 @@ The Control Plane does not run workloads. It only answers two questions:
 * Where should this Pod run?
 
 ```mermaid
-graph LR
-    User[kubectl apply] --> API(API Server)
-    API <--> ETCD[(ETCD: Storage)]
-    Sched[Scheduler] -- "Watch & Bind" --> API
-    API -- "Bind: nodeName=minikube" --> ETCD
+graph TD
+    User[1. kubectl apply] --> API(API Server)
+    API <-->|2. Store Intent| ETCD[(ETCD: Storage)]
+    Sched[Scheduler] -- "3. Watch Pending Pods" --> API
+    Sched -- "4. Decide Node" --> Sched
+    Sched -- "5. Bind to minikube" --> API
+    API -- "6. Update nodeName" --> ETCD
 ```
+
+This 6-step flow perfectly explains the timeline:
+1. **Request:** User submits the Pod manifest via `kubectl`.
+2. **Storage:** API Server validates and persists the "Pending" object into ETCD.
+3. **Watch:** The Scheduler continuously watches the API Server for unassigned Pods.
+4. **Scoring:** Scheduler reviews available nodes and picks the best one (e.g., `minikube`).
+5. **Binding:** Scheduler sends a Bind request back to the API Server.
+6. **Persistence:** API Server updates the Pod's `nodeName` field in ETCD. Now the Node's Kubelet will take over.
 
 ### 3.1 API Server: The only gateway of Kubernetes
 
@@ -546,7 +556,7 @@ The most important concept here is the **veth pair**.
 A veth pair is essentially a virtual cable with two ends:
 
 ```mermaid
-graph LR
+graph TD
     subgraph Pod [Network Namespace]
         eth0[eth0 @if6: 10.244.0.3]
     end
@@ -746,7 +756,7 @@ This replaces the Pod source IP with the Node IP.
 Conceptually:
 
 ```mermaid
-graph LR
+graph TD
     Pod[Pod 10.244.0.3] -->|Packet| Node[Node 192.168.49.2]
     Node -- SNAT / Masquerade --> Google((Internet))
     Google -->|Reply to 192.168.49.2| Node

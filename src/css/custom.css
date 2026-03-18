@@ -20,7 +20,7 @@ div.img-small img {
 
 /* You can override the default Infima variables here. */
 :root {
---ifm-color-primary: #b01111;
+  --ifm-color-primary: #b01111;
   --ifm-color-primary-dark: #9e0f0f;
   --ifm-color-primary-darker: #960e0e;
   --ifm-color-primary-darkest: #7b0c0c;
@@ -45,7 +45,7 @@ div.img-small img {
 }
 
 .footer--dark {
-    --ifm-footer-background-color: #2E3032FF;
+  --ifm-footer-background-color: #2E3032FF;
 }
 
 /* add github icon in the navigation bar*/
@@ -103,4 +103,15 @@ html[data-theme='dark'] .header--github-link:before {
   .youtube-video {
     height: 200px;
   }
+}
+
+/* Fix Mermaid Diagram Zoom/Scaling */
+.docusaurus-mermaid-container>svg {
+  max-width: none !important;
+  width: 100% !important;
+  min-width: 800px;
+}
+
+.docusaurus-mermaid-container {
+  overflow-x: auto;
 }
