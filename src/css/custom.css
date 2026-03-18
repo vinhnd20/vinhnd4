@@ -105,13 +105,9 @@ html[data-theme='dark'] .header--github-link:before {
   }
 }
 
-/* Fix Mermaid Diagram Zoom/Scaling */
-.docusaurus-mermaid-container>svg {
-  max-width: none !important;
+/* Mermaid Diagram: fit container width, no horizontal scroll */
+.docusaurus-mermaid-container > svg {
   width: 100% !important;
-  min-width: 800px;
-}
-
-.docusaurus-mermaid-container {
-  overflow-x: auto;
+  height: auto !important;
+  max-width: 100% !important;
 }
