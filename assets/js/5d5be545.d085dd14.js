@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_personal_website=self.webpackChunkmy_personal_website||[]).push([[9390],{17220:e=>{e.exports=JSON.parse('{"tags":[{"label":"Kubernetes","permalink":"/vinhnd4/blog/tags/kubernetes","count":2},{"label":"AI","permalink":"/vinhnd4/blog/tags/ai","count":1},{"label":"MCP","permalink":"/vinhnd4/blog/tags/mcp","count":1}]}')}}]);
