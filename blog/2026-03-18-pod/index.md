@@ -20,9 +20,9 @@ If you SSH into a Kubernetes worker node and run:
 ps aux | grep pod
 ```
 
-You won't see anything. There is no process named *pod*, no binary called *pod*, and no kernel object called *pod*. The Linux kernel doesn't know what a Pod is.
+You might see some lines related to the kubelet or a container runtime (e.g., `cri-dockerd --pod-infra-container-image`), but you will not find a process **named** `pod`, nor a binary called `pod`. The Linux kernel has no native concept of a "Pod" object.
 
-So what is a Pod?
+To the operating system, a Pod is invisible. So what is it exactly?
 
 Documentation often says:
 
