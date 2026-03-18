@@ -20,11 +20,7 @@ If you SSH into a Kubernetes worker node and run:
 ps aux | grep pod
 ```
 
-You won't see anything.
-
-There is no process named *pod*, no binary called *pod*, and no kernel object called *pod*.
-
-The Linux kernel doesn't know what a Pod is.
+You won't see anything. There is no process named *pod*, no binary called *pod*, and no kernel object called *pod*. The Linux kernel doesn't know what a Pod is.
 
 So what is a Pod?
 
@@ -32,53 +28,29 @@ Documentation often says:
 
 > Pod is the smallest deployable unit in Kubernetes.
 
-That is correct, but it doesn't really help when debugging production issues.
-
-A Platform/DevOps engineer should think about it differently:
+That is correct, but it doesn't really help when debugging production issues. A Platform/DevOps engineer should think about it differently:
 
 > A Pod is not an object. A Pod is an environment contract.
 
 More specifically, a Pod is essentially a collection of Linux primitives assembled by the kubelet:
 
-```
-Linux namespaces
-+ cgroups
-+ network namespace
-+ volume mounts
-+ container runtime
-+ CNI networking
-+ CSI storage
-```
-
-Kubernetes doesn't actually *create a Pod*.
-
-Instead, Kubernetes assembles Linux building blocks into a single execution sandbox.
-
-A better mental model is:
-
-> Pod = Linux isolation bundle
-
-Another useful way to think about it:
-
-Instead of thinking:
-
-```
-Pod → container group
+```mermaid
+graph LR
+    subgraph Pod ["A Pod = Linux Sandbox"]
+        NS["Namespaces\n(pid, net, mnt, ipc, uts)"]
+        CG["Cgroups\n(cpu, memory limits)"]
+        MNT["Volume Mounts\n(bind mount via CSI)"]
+        NET["Network Interface\n(veth pair via CNI)"]
+        RT["Container Runtime\n(containerd / CRI-O)"]
+    end
+    Kubelet["Kubelet"] -->|"Assembles"| Pod
 ```
 
-Think:
+Kubernetes doesn't actually *create a Pod*. Instead, it assembles Linux building blocks into a single execution sandbox.
 
-```
-Pod → Linux environment
-```
+> **Better mental model:** Pod = Linux isolation bundle
 
-It is similar to a lightweight VM built from kernel primitives.
-
-But unlike a VM:
-
-* There is no hypervisor
-* No guest OS
-* Only namespaces and cgroups
+Instead of thinking `Pod → container group`, think `Pod → Linux environment`. It is similar to a lightweight VM built from kernel primitives, but without a hypervisor or guest OS — only namespaces and cgroups.
 
 ## 2. The Big Picture: End-to-End Pod Lifecycle
 
@@ -115,8 +87,11 @@ sequenceDiagram
 ### Key Lifecycle Milestones
 
 *   **Control Plane Persistence**: The Pod exists only as a "legal document" in ETCD. No containers exist yet; this is purely **desired state storage**.
+
 *   **Scheduling Decision**: The Scheduler selects a Node and updates `spec.nodeName`. Still no containers; this is only a **placement decision**.
+
 *   **Node-Level Construction**: Kubelet calls **CRI**, **CNI**, and **CSI** to build the environment. Kubernetes moves from **cluster decision** to **Linux construction**.
+
 *   **Runtime Execution**: Once sandbox, networking, and volumes are ready, the Pod transitions to **Running**. The Linux isolation bundle becomes real.
 
 At a high level, this lifecycle appears straightforward.
@@ -137,13 +112,14 @@ The Control Plane does not run workloads. It only answers two questions:
 * Where should this Pod run?
 
 ```mermaid
-graph TD
-    User[1. kubectl apply] --> API(API Server)
-    API <-->|2. Store Intent| ETCD[(ETCD: Storage)]
-    Sched[Scheduler] -- "3. Watch Pending Pods" --> API
-    Sched -- "4. Decide Node" --> Sched
-    Sched -- "5. Bind to minikube" --> API
-    API -- "6. Update nodeName" --> ETCD
+graph LR
+    subgraph ControlPlane ["Control Plane"]
+        User["1. kubectl apply"] --> API("API Server")
+        API <-->|"2. Store (Pending)"| ETCD[("ETCD")]
+        Sched["Scheduler"] -->|"3. Watch Pending"| API
+        Sched -->|"5. Bind: minikube"| API
+    end
+    Sched -->|"4. Filter & Score Nodes"| Sched
 ```
 
 This 6-step flow perfectly explains the timeline:
@@ -247,13 +223,16 @@ The control plane never creates containers. It only makes placement and configur
 Once the Scheduler assigns a Pod to a Node, responsibility shifts to the Kubelet. The Kubelet turns a PodSpec from a JSON document into an actual runtime environment on the Node. Unlike what many engineers assume, the Kubelet does not directly start containers. Instead, it communicates with the container runtime through the **Container Runtime Interface (CRI)**. At this stage Kubernetes moves from **cluster-level decision to node-level execution**.
 
 ```mermaid
-graph TD
-    K[Kubelet Loop] --> CRI[1. CRI: Run PodSandbox]
-    CRI --> Pause[Create Pause Container PID: 5879]
-    Pause --> CNI[2. CNI: Setup Network]
-    CNI --> IP[Attach IP: 10.244.0.3]
-    Pause --> CSI[3. CSI: Mount Volumes]
-    CSI --> App[4. Pull & Start App Container: Application]
+graph LR
+    subgraph Node ["Worker Node (minikube)"]
+        K["Kubelet Loop"] -->|"1. Call"| CRI["CRI (containerd)"]
+        CRI -->|"2. Create"| Pause["Pause Container\n(PID: 5879)"]
+        Pause -->|"3. Delegate"| CNI["CNI Plugin"]
+        CNI -->|"4. Assign"| IP["Pod IP: 10.244.0.3"]
+        Pause -->|"3. Delegate"| CSI["CSI Driver"]
+        CSI -->|"4. Mount"| Vol["Volumes"]
+        CRI -->|"5. Start"| App["App Container (nginx)"]
+    end
 ```
 
 ### 4.1 Kubelet reconciliation loop
@@ -365,17 +344,14 @@ Kubernetes does not invent new isolation mechanisms. It orchestrates existing Li
 Linux namespaces are the foundation of container isolation. They allow processes to have separate views of system resources.
 
 ```mermaid
-graph BT
-    subgraph "Linux Kernel Isolation"
-        NET[Network Namespace: eth0, IP: 10.244.0.3]
-        IPC[IPC Namespace]
-        MNT[Mount Namespace]
+graph LR
+    subgraph Pod ["Pod (lab-internals)"]
+        Pause["Pause Container\n(PID: 5879)"] -.-|"Anchors"| NET["NET Namespace\n(eth0, IP: 10.244.0.3)"]
+        Pause -.-|"Anchors"| IPC["IPC Namespace"]
+        App["nginx Container\n(PID: 6340)"] -.-|"Joins"| NET
+        App -.-|"Joins"| IPC
+        App -->|"Owns"| MNT["MNT Namespace"]
     end
-    Nginx[App Container: PID 6340] --> |Joins| NET
-    Nginx --> |Joins| IPC
-    Nginx --> |Owns| MNT
-    Pause[Pause Container: PID 5879] --> |Anchors| NET
-    Pause --> |Anchors| IPC
 ```
 
 The most important namespaces used by Pods are:
@@ -498,27 +474,18 @@ From Linux's perspective, these are just mount operations inside the container's
 
 ### 5.4 Mapping Kubernetes concepts to Linux reality
 
-At this point we can clearly map Kubernetes abstractions to Linux mechanisms:
+Every Kubernetes abstraction maps directly to a Linux primitive:
 
-| Kubernetes Concept | Linux Implementation |
+| Kubernetes Concept | Linux Implementation | syscall / interface |
+| ------------------ | -------------------- | ------------------- |
+| Pod                | Namespace bundle     | `clone()` with NS flags |
+| Container limits   | Cgroups              | `/sys/fs/cgroup/` |
+| Volume             | Bind mount           | `mount --bind` |
+| Pod network        | Network namespace    | `ip netns` |
+| Service (ClusterIP)| iptables DNAT rule   | `iptables -t nat` |
 
-| ------------------ | -------------------- |
-
-| Pod                | Namespace bundle     |
-
-| Container limits   | Cgroups              |
-
-| Volume             | Bind mount           |
-
-| Pod network        | Network namespace    |
-
-| Pod isolation      | Namespace grouping   |
-
-This leads to one of the most important insights about Kubernetes internals:
-
-Kubernetes does not create resources.
-
-It programs Linux.
+> **The core insight:** Kubernetes does not *create* resources. It *programs Linux*.
+> Every Pod is just a group of processes sharing namespaces and cgroups — assembled by Kubelet, enforced by the kernel.
 
 ---
 
@@ -528,324 +495,277 @@ A Pod is not a native Linux object. It is a carefully constructed environment bu
 
 ## 6. Network Internals: How Packets Actually Reach a Pod
 
-So far we have seen how Kubernetes schedules Pods and how Linux provides isolation. But one of the most complex parts of Kubernetes is networking. A fundamental question remains:
-
-How does a packet actually reach a Pod?
-
-The answer is not a single component but a chain of Linux networking mechanisms working together:
+Kubernetes networking is not magic. It is **Linux networking automated by CNI and kube-proxy**. The full chain:
 
 ```
-CNI → veth pair → bridge → routing → iptables → conntrack → DNS
+Pod eth0 → veth pair → bridge → routing table → iptables → conntrack → destination
 ```
-
-Kubernetes networking is not magic. It is Linux networking automation.
 
 ---
 
-## 6.1 CNI: How a Pod gets its network interface
+## 6.1 The Virtual Cable: veth pair
 
-When Kubelet creates the PodSandbox, it calls the CNI plugin to configure networking. The CNI plugin is responsible for:
+When CNI sets up a Pod's network, it creates a **veth pair** — a virtual cable with two ends. One end lives inside the Pod's network namespace; the other lives on the host.
 
-* creating a network namespace
-* creating a veth pair
-* assigning an IP address
-* configuring routing rules
-
-The most important concept here is the **veth pair**.
-
-A veth pair is essentially a virtual cable with two ends:
-
-```mermaid
-graph TD
-    subgraph Pod [Network Namespace]
-        eth0[eth0 @if6: 10.244.0.3]
-    end
-    subgraph Host [Root Namespace]
-        veth[veth1cac321 @if2]
-    end
-    eth0 <-->|Virtual Cable| veth
-```
-
-You can verify this inside the Pod namespace:
+**Step 1: Inspect from inside the Pod (entering via PID 5879):**
 
 ```bash
 sudo nsenter -t 5879 -n ip link
 ```
 
-Example:
-
-```bash
-2: eth0@if6
+```
+2: eth0@if6: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
+    link/ether 02:42:0a:f4:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
 ```
 
-This indicates the Pod interface connects to interface index 6 on the host.
+`eth0@if6` means: the Pod's `eth0` has interface index **2**, and its other end is interface index **6** on the host. The `@if6` is the cross-namespace pointer.
 
-Checking the host:
+**Step 2: Verify from the host:**
 
 ```bash
 ip link | grep "^6:"
 ```
 
-Example:
-
 ```
-6: veth1cac321@if2
+6: veth1cac321@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master bridge state UP
 ```
 
-This confirms both ends of the same virtual cable.
+`veth1cac321@if2` confirms the peer. `@if2` points back to interface index 2 (the Pod's `eth0`). The `master bridge` tells us this veth is plugged into the Linux bridge.
+
+```mermaid
+graph LR
+    subgraph PodNS ["Pod Network Namespace (nsenter -t 5879)"]
+        eth0["eth0 (index 2)\n02:42:0a:f4:00:03\n10.244.0.3"]
+    end
+    subgraph HostNS ["Host Root Namespace"]
+        veth["veth1cac321 (index 6)\nmaster: bridge"]
+        Bridge["bridge\n(10.244.0.1)\nLinux L2 Switch"]
+    end
+    eth0 <-->|"veth pair\n(virtual cable)"| veth
+    veth --- Bridge
+```
+
+**CNI config driving this setup** (`/etc/cni/net.d/1-k8s.conflist`):
+
+```json
+{
+  "name": "bridge",
+  "type": "bridge",
+  "bridge": "bridge",
+  "ipam": { "type": "host-local", "subnet": "10.244.0.0/16" }
+}
+```
 
 ---
 
-## 6.2 Bridge: The virtual switch of the Node
+## 6.2 Routing: How a packet knows where to go
 
-The host-side veth does not connect directly to the internet. Instead, it connects to a Linux bridge which acts as a virtual switch.
-
-```mermaid
-graph TD
-    Pod1[Pod 10.244.0.3] --- veth1[veth1cac321]
-    Pod2[Other Pods] --- veth2[vethxxxx]
-    veth1 --- Bridge[Linux Bridge]
-    veth2 --- Bridge
-    Bridge --- Gateway[Gateway: 10.244.0.1]
-```
-
-You can see the bridge:
-
-```bash
-ip link show bridge
-```
-
-Example:
-
-```
-bridge: <BROADCAST,MULTICAST,UP>
-```
-
-This bridge typically acts as the gateway for the Pod network.
-
-Example routing inside the Pod:
+**Inside the Pod:**
 
 ```bash
 sudo nsenter -t 5879 -n ip route
 ```
 
-Result:
-
 ```
 default via 10.244.0.1 dev eth0
+10.244.0.0/16 dev eth0 proto kernel scope link src 10.244.0.3
 ```
 
-This shows the Pod sends traffic to the bridge gateway first.
+Any traffic leaving the Pod hits `eth0`, goes over the veth cable to the bridge at `10.244.0.1` (the default gateway).
 
-From the Node perspective:
+**On the host Node:**
 
 ```bash
 ip route | grep bridge
 ```
 
-Example:
-
 ```
-10.244.0.0/16 dev bridge
+10.244.0.0/16 dev bridge proto kernel scope link src 10.244.0.1
 ```
 
-This shows the Node knows how to route traffic for the Pod CIDR.
+The `bridge` interface **is** the gateway `10.244.0.1`. It receives packets from all Pod veths and decides where to forward them next.
+
+```mermaid
+graph LR
+    subgraph Node ["Worker Node (minikube)"]
+        PodA["Pod A\n10.244.0.3"] -->|"default via 10.244.0.1"| vethA["veth1cac321"]
+        PodB["Pod B\n10.244.0.4"] -->|"default via 10.244.0.1"| vethB["vethxxxx"]
+        vethA --- Bridge["bridge\n10.244.0.1\n(virtual L2 switch)"]
+        vethB --- Bridge
+    end
+    Bridge -->|"10.244.0.0/16"| Ext["External / Internet\n192.168.49.2 (Node eth0)"]
+```
 
 ---
 
-## 6.3 Service networking: The iptables illusion
+## 6.3 Inbound: The iptables DNAT trick (Service → Pod)
 
-One of the biggest misconceptions is that Kubernetes Services are load balancers. In reality, Services are implemented as iptables rules programmed by kube-proxy.
+A Kubernetes Service IP (ClusterIP) does not exist as a real interface anywhere. It is a **virtual IP maintained purely by iptables rules** written by `kube-proxy`.
 
-When a client connects to a Service IP:
+When you call `10.109.174.153:80` (Service), the kernel intercepts the packet and rewrites the destination:
+
+```bash
+sudo iptables -t nat -S | grep HL5LMXD
+```
+
+The 4-step iptables chain:
+
+| Step | Chain | What happens |
+|------|-------|--------------|
+| 1 | `KUBE-SVC-HL5LMXD...` | kube-proxy creates a dedicated chain per Service |
+| 2 | `KUBE-SERVICES -d 10.109.174.153/32 -j KUBE-SVC-HL5...` | If dst = Service IP → jump into that chain |
+| 3 | `KUBE-SVC-HL5... -j KUBE-SEP-PU7AOS...` | Select an Endpoint (Pod), jump to its chain |
+| 4 | `KUBE-SEP-... -j DNAT --to-destination 10.244.0.3:80` | **Rewrite dst IP from Service → Pod** |
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant K as Kernel (Iptables)
-    participant P as Pod (10.244.0.3)
-    C->>K: GET 10.109.174.153 (Service VIP)
-    Note over K: 1. Catch packet (KUBE-SERVICES)<br/>2. Select Endpoint<br/>3. Rewrite Destination (DNAT)
-    K->>P: GET 10.244.0.3:80 (Actual Pod IP)
+    participant C as Client (192.168.49.1)
+    participant K as Kernel / iptables
+    participant P as Pod (10.244.0.3:80)
+    C->>K: SYN dst=10.109.174.153:80
+    Note over K: KUBE-SERVICES → KUBE-SVC → KUBE-SEP<br/>DNAT: rewrite dst → 10.244.0.3:80
+    K->>P: SYN dst=10.244.0.3:80
+    P-->>K: SYN-ACK src=10.244.0.3
+    Note over K: conntrack: rewrite src back to 10.109.174.153
+    K-->>C: SYN-ACK src=10.109.174.153:80
 ```
 
-The key mechanism is **DNAT (Destination NAT)**.
-
-Example rules:
-
-```bash
-sudo iptables -t nat -S
-```
-
-Typical flow:
-
-1. Packet hits KUBE-SERVICES chain
-2. Rule matches Service IP
-3. Packet jumps to KUBE-SVC chain
-4. Packet DNATed to Pod IP
-
-Example DNAT rule:
-
-``` bash
-DNAT --to-destination 10.244.0.3:80
-```
-
-This is the exact moment where the virtual Service IP disappears and the real Pod IP is substituted.
-
-From the client perspective nothing changed. From the kernel perspective the destination was rewritten.
-
----
-
-## 6.4 Conntrack: The invisible state machine
-
-DNAT alone would break return traffic if Linux did not remember the translation. This is where **conntrack** becomes critical.
-
-Conntrack maintains a state table of NAT translations.
-
-You can inspect it:
+**Conntrack records the translation** so return traffic can be reversed:
 
 ```bash
 sudo conntrack -L | grep 10.109.174.153
 ```
 
-Example:
-
 ```
-src=192.168.49.1 dst=10.109.174.153
-src=10.244.0.3 dst=192.168.49.1
+tcp 6 120 ESTABLISHED src=192.168.49.1 dst=10.109.174.153 sport=54321 dport=80
+                       src=10.244.0.3   dst=192.168.49.1   sport=80   dport=54321 [ASSURED]
 ```
 
-This record tells the kernel:
-
-If traffic returns from Pod IP, rewrite it back to the Service IP before sending it to the client.
-
-This mechanism ensures connection consistency.
-
-Without conntrack:
-
-Service networking would not work.
+Read this as two sides of the same connection: the kernel remembers both the forward translation (Service → Pod) and the reverse (Pod reply → Client sees Service IP).
 
 ---
 
-## 6.5 Outbound traffic: SNAT and masquerading
+## 6.4 Outbound: SNAT / Masquerade (Pod → Internet)
 
-When a Pod accesses the internet, another problem appears. Pod IPs are usually private CIDR ranges that external networks cannot route.
-
-Example:
-
-```
-10.244.x.x
-```
-
-To solve this, Kubernetes uses **SNAT (Source NAT)**.
-
-Example rule:
+Pod IPs (`10.244.x.x`) are private and not routable on the internet. When a Pod calls out, the kernel must **replace the source IP** with the Node's IP.
 
 ```bash
-iptables -t nat -S KUBE-POSTROUTING
+sudo iptables -t nat -S KUBE-POSTROUTING
 ```
 
-Example:
-
 ```
-MASQUERADE
+-A KUBE-POSTROUTING -m comment --comment "kubernetes service traffic requiring SNAT" -j MASQUERADE
 ```
 
-This replaces the Pod source IP with the Node IP.
+Conntrack records the outbound SNAT:
 
-Conceptually:
+```bash
+sudo conntrack -L | grep 10.244.0.3
+```
+
+```
+tcp 6 119 TIME_WAIT src=10.244.0.3 dst=142.250.199.78 sport=45678 dport=80
+                    src=142.250.199.78 dst=192.168.49.2 [ASSURED]
+```
+
+- Forward: Pod (`10.244.0.3`) → Google (`142.250.199.78`)
+- Reverse: Google replies to Node IP (`192.168.49.2`) → kernel looks up conntrack → delivers to Pod (`10.244.0.3`)
 
 ```mermaid
-graph TD
-    Pod[Pod 10.244.0.3] -->|Packet| Node[Node 192.168.49.2]
-    Node -- SNAT / Masquerade --> Google((Internet))
-    Google -->|Reply to 192.168.49.2| Node
-    Node -- Look up Conntrack --> Pod
+graph LR
+    subgraph PodSpace ["Pod (10.244.0.3)"]
+        App["App Process"]
+    end
+    subgraph NodeSpace ["Node (192.168.49.2)"]
+        MASQ["iptables MASQUERADE\n(POSTROUTING chain)"]
+        CT["Conntrack Table\n10.244.0.3 ↔ 192.168.49.2"]
+    end
+    App -->|"src=10.244.0.3"| MASQ
+    MASQ -->|"src rewritten → 192.168.49.2"| Internet(("Internet\n142.250.199.78"))
+    Internet -->|"reply to 192.168.49.2"| CT
+    CT -->|"restore src → 10.244.0.3"| App
 ```
-
-Conntrack again records this mapping so return packets can be delivered back to the correct Pod.
 
 ---
 
-## 6.6 DNS: How Pods discover Services
+## 6.5 DNS: CoreDNS and the ndots:5 trap
 
-Networking alone is not enough. Pods must also resolve names to communicate with Services.
-
-```mermaid
-sequenceDiagram
-    participant P as Pod
-    participant R as resolv.conf
-    participant DNS as CoreDNS (10.96.0.10)
-    P->>R: Where is 'database'?
-    R->>DNS: Query: database.default.svc.cluster.local?
-    DNS-->>P: IP: 10.244.0.100
-```
-
-You can inspect Pod DNS configuration:
+Every Pod has its DNS pre-configured by Kubelet at startup:
 
 ```bash
 kubectl exec lab-internals -- cat /etc/resolv.conf
 ```
 
-Example:
-
 ```
 nameserver 10.96.0.10
-search default.svc.cluster.local
+search default.svc.cluster.local svc.cluster.local cluster.local
 options ndots:5
 ```
 
-The nameserver points to CoreDNS.
-
-You can verify:
+`10.96.0.10` is the ClusterIP of CoreDNS:
 
 ```bash
 kubectl get svc -n kube-system kube-dns
 ```
 
-Example:
-
 ```
-CLUSTER-IP 10.96.0.10
-```
-
-This shows how Kubernetes injects cluster DNS automatically.
-
-An interesting detail is:
-
-```
-ndots:5
+NAME       TYPE        CLUSTER-IP    PORT(S)
+kube-dns   ClusterIP   10.96.0.10    53/UDP, 53/TCP
 ```
 
-This means any name with fewer than five dots will first be searched inside the cluster domain before external resolution. This explains why external DNS lookups can sometimes appear slow.
+```mermaid
+sequenceDiagram
+    participant App as App in Pod
+    participant Res as /etc/resolv.conf
+    participant DNS as CoreDNS (10.96.0.10)
+    App->>Res: resolve "database"
+    Note over Res: ndots:5 → fewer than 5 dots → try search domains first
+    Res->>DNS: database.default.svc.cluster.local?
+    DNS-->>App: 10.244.0.100 (Service ClusterIP)
+```
+
+**The `ndots:5` trap:** If a hostname has fewer than 5 dots, the resolver tries each `search` domain suffix before going external. So `google.com` (1 dot) triggers:
+
+1. `google.com.default.svc.cluster.local` → NXDOMAIN
+2. `google.com.svc.cluster.local` → NXDOMAIN
+3. `google.com.cluster.local` → NXDOMAIN
+4. `google.com` → resolved externally
+
+This causes **3 wasted DNS round-trips** before every external lookup. Fix: use `google.com.` (trailing dot = FQDN, skip search domains entirely).
 
 ---
 
-## 6.7 Putting it all together: Packet journey
+## 6.6 Full picture: End-to-end packet flow
 
-At this point we can reconstruct the full journey of a packet:
-
+```mermaid
+graph LR
+    subgraph Client ["Client (192.168.49.1)"]
+        C["curl 10.109.174.153:80"]
+    end
+    subgraph Node ["Worker Node (minikube / 192.168.49.2)"]
+        IPT["iptables DNAT\n10.109.174.153→10.244.0.3"]
+        CT["Conntrack Table"]
+        Bridge["bridge (10.244.0.1)"]
+        veth["veth1cac321"]
+    end
+    subgraph PodNS ["Pod NS (10.244.0.3)"]
+        eth0["eth0"]
+        Nginx["nginx :80"]
+    end
+    C -->|"dst=10.109.174.153"| IPT
+    IPT -->|"DNAT: dst=10.244.0.3"| CT
+    CT --> Bridge
+    Bridge --> veth
+    veth <-->|"veth pair"| eth0
+    eth0 --> Nginx
+    Nginx -->|"reply"| eth0
+    eth0 <-->|"veth pair"| veth
+    veth --> Bridge
+    Bridge --> CT
+    CT -->|"un-DNAT: src=10.109.174.153"| C
 ```
-Client request
-→ Service IP
-→ iptables DNAT
-→ Pod IP
-→ veth pair
-→ Container process
-Response:
-Container
-→ veth
-→ bridge
-→ SNAT
-→ conntrack rewrite
-→ client
-```
 
-This entire process happens inside the Linux kernel.
-
-Kubernetes only programs the rules.
-
-Linux executes them.
+> Kubernetes only programs the rules. Linux executes them.
 
 ---
 
